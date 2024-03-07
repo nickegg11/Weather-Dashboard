@@ -2,7 +2,7 @@ const dayjs = require("dayjs");
 
 const searchHistory = [];
 const weatherApiRootUrl = 'https://api.openweathermap.org';
-const weartherApiKey = '87b4d240f3b252b2a5cab333c81d7740';
+const weartherApiKey = '0390269bc337e7b6d07d6bbdc4a06216';
 
 const searchForm = document.querySelector('#search-form');
 const searchInput = document.querySelector('#search-input');
