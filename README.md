@@ -4,6 +4,8 @@ Table of Contents
 
 * [Overview](#overview)
 * [Description](#description)
+* [Links](#links)
+* [Screenshots](#screenshots)
 * [License](#license)
 * [Acknowledgments](#acknowledgments)
 
@@ -30,6 +32,10 @@ Links
 * [Live Site](https://nickegg11.github.io/Weather-Dashboard/)
 * [GitHub Repo](https://github.com/nickegg11/Weather-Dashboard)
 
+
+Screenshots
+------------
+![weather dashboard screenshot](./assets/weather-dashboard-screenshot.png)
 
 
 License
