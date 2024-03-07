@@ -1,6 +1,6 @@
 var searchHistory = [];
 var weatherApiRootUrl = 'https://api.openweathermap.org';
-var weartherApiKey = '0390269bc337e7b6d07d6bbdc4a06216';
+var weatherApiKey = '0390269bc337e7b6d07d6bbdc4a06216';
 
 var searchForm = document.querySelector('#search-form');
 var searchInput = document.querySelector('#search-input');
@@ -20,36 +20,38 @@ function renderSearchHistory() {
     btn.setAttribute('aria-controls', 'today forecast');
     btn.classList.add('history-btn', 'btn-history');
 
-    btn.setAttribute('data-date', searchHistory[i]);
+    btn.setAttribute('data-search', searchHistory[i]);
     btn.textContent = searchHistory[i];
-    searchHistoryContainer.appendChild(btn);
+    searchHistoryContainer.append(btn);
   }
 }
 
 function appendToHistory(search) {
+  // If there is no search term return the function
   if (searchHistory.indexOf(search) !== -1) {
     return;
   }
   searchHistory.push(search);
+
   localStorage.setItem('search-history', JSON.stringify(searchHistory));
   renderSearchHistory();
 }
 
 function initSearchHistory() {
-  var storedSearchHistory = JSON.parse(localStorage.getItem('search-history'));
-  if (storedSearchHistory !== null) {
-    searchHistory = storedSearchHistory;
+  var storedHistory = localStorage.getItem('search-history');
+  if (storedHistory) {
+    searchHistory = JSON.parse(storedHistory);
   }
   renderSearchHistory();
 }
 
 function renderCurrentWeather(city, weather) {
   var date = dayjs().format('M/D/YYYY');
-  var tempF = (weather.main.temp - 273.15) * 1.80 + 32;
-  var windMph = weather.wind.speed * 2.237;
+  var tempF = weather.main.temp;
+  var windMph = weather.wind.speed;
   var humidity = weather.main.humidity;
 
-  var iconUrl = `https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`;
+  var iconUrl = `https://openweathermap.org/img/w/${weather.weather[0].icon}.png`;
   var iconDescription = weather.weather[0].description || weather[0].main;
   var card = document.createElement('div');
   var cardBody = document.createElement('div');
@@ -83,12 +85,12 @@ function renderCurrentWeather(city, weather) {
 }
 
 function renderForecastCard(forecast) {
-  var iconUrl = `https://openweathermap.org/img/wn/${forecast.weather[0].icon}@2x.png`;
-
-  var iconDescription = forecast.weather[0].description || forecast[0].main;
-  var tempF = (forecast.main.temp - 273.15) * 1.80 + 32;
+ 
+  var iconUrl = `https://openweathermap.org/img/w/${forecast.weather[0].icon}.png`;
+  var iconDescription = forecast.weather[0].description;
+  var tempF = forecast.main.temp;
   var humidity = forecast.main.humidity;
-  var windMph = forecast.wind.speed * 2.237;
+  var windMph = forecast.wind.speed;
 
   var col = document.createElement('div');
   var card = document.createElement('div');
@@ -124,8 +126,8 @@ function renderForecastCard(forecast) {
 }
 
 function renderForecast(dailyForecast) {
-  var startDt = dayjs().add(1, 'day').startOf('day').unix;
-  var endDt = dayjs().add(6, 'day').startOf('day').unix;
+  var startDt = dayjs().add(1, 'day').startOf('day').unix();
+  var endDt = dayjs().add(6, 'day').startOf('day').unix();
 
   var headingCol = document.createElement('div');
   var heading = document.createElement('h4');
@@ -137,18 +139,18 @@ function renderForecast(dailyForecast) {
   forecastContainer.innerHTML = '';
   forecastContainer.append(headingCol);
 
-  for (var i = 0; i < dailyForecast.list.length; i++) {
-    if (dailyForecast.list[i].dt >= startDt && dailyForecast.list[i].dt < endDt) {
-      if (dailyForecast[i].dt_txt.slice(11, 13) == '12') {
+  for (var i = 0; i < dailyForecast.length; i++) {
+    if (dailyForecast[i].dt >= startDt && dailyForecast[i].dt < endDt) {
+      if (dailyForecast[i].dt_txt.slice(11, 13) == "12") {
         renderForecastCard(dailyForecast[i]);
       }
     }
   }
 }
 
-function renderItems (city, data) {
-  renderCurrentWeather(city, data);
-  renderForecast(data);
+function renderItems(city, data) {
+  renderCurrentWeather(city, data.list[0], data.city.timezone);
+  renderForecast(data.list);
 }
 
 function fetchWeather(location) {
@@ -156,7 +158,7 @@ function fetchWeather(location) {
   var { lon } = location;
   var city = location.name;
 
-  var apiUrl = `${weatherApiRootUrl}/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${weartherApiKey}`;
+  var apiUrl = `${weatherApiRootUrl}/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${weatherApiKey}`;
 
   fetch(apiUrl)
     .then(function (res) {
@@ -165,28 +167,29 @@ function fetchWeather(location) {
     .then(function (data) {
       renderItems(city, data);
     })
-    .catch(function (error) {
-      console.log(error);
+    .catch(function (err) {
+      console.error(err);
     });
 }
 
 function fetchCoordinates(search) {
-  var apiUrl = `${weatherApiRootUrl}/geo/1.0/direct?q=${city}&limit=5&appid=${weartherApiKey}`;
+  var apiUrl = `${weatherApiRootUrl}/geo/1.0/direct?q=${search}&limit=5&appid=${weatherApiKey}`;
 
   fetch(apiUrl)
     .then(function (res) {
       return res.json();
     })
     .then(function (data) {
-      if (data.length === 0) {
-        alert('No results found');
+      if (!data[0]) {
+        alert('City not found. Please try again.');
       } else {
         appendToHistory(search);
         fetchWeather(data[0]);
       }
+      
     })
-    .catch(function (error) {
-      console.log(error);
+    .catch(function (err) {
+      console.error(err);
     });
 }
 
@@ -196,13 +199,13 @@ function handleSearchFormSubmit(event) {
   }
   event.preventDefault();
 
-  var search = searchInput.value;
+  var search = searchInput.value.trim();
   fetchCoordinates(search);
   searchInput.value = '';
 }
 
 function handleSearchHistoryClick(event) {
-  if (!event.target.matches('btn-history')) {
+  if (!event.target.matches('.btn-history')) {
     return;
   }
   var btn = event.target;
@@ -213,4 +216,4 @@ function handleSearchHistoryClick(event) {
 initSearchHistory();
 
 searchForm.addEventListener('submit', handleSearchFormSubmit);
-searchHistory.addEventListener('click', handleSearchHistoryClick);
+searchHistoryContainer.addEventListener('click', handleSearchHistoryClick);
