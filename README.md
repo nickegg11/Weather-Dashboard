@@ -1,4 +1,13 @@
-# Weather-Dashboard
+# Weather Dashboard
+Table of Contents
+-----------------
+
+* [Overview](#overview)
+* [Description](#description)
+* [License](#license)
+* [Acknowledgments](#acknowledgments)
+
+
 
 Overview
 --------
@@ -16,6 +25,10 @@ The app uses HTML, CSS, and JavaScript. The CSS is built with Bootstrap and is r
 
 
 
+Links
+-----
+* [Live Site](https://nickegg11.github.io/Weather-Dashboard/)
+* [GitHub Repo](https://github.com/nickegg11/Weather-Dashboard)
 
 
 
@@ -24,6 +37,8 @@ License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
+
+
 Acknowledgments
-----------------
+
 * Thanks to the OpenWeatherMap API for providing the weather data.
