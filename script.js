@@ -1,14 +1,12 @@
-const dayjs = require("dayjs");
+var searchHistory = [];
+var weatherApiRootUrl = 'https://api.openweathermap.org';
+var weartherApiKey = '0390269bc337e7b6d07d6bbdc4a06216';
 
-const searchHistory = [];
-const weatherApiRootUrl = 'https://api.openweathermap.org';
-const weartherApiKey = '0390269bc337e7b6d07d6bbdc4a06216';
-
-const searchForm = document.querySelector('#search-form');
-const searchInput = document.querySelector('#search-input');
-const todayContainer = document.querySelector('#today');
-const forecastContainer = document.querySelector('#forecast');
-const searchHistoryContainer = document.querySelector('#history');
+var searchForm = document.querySelector('#search-form');
+var searchInput = document.querySelector('#search-input');
+var todayContainer = document.querySelector('#today');
+var forecastContainer = document.querySelector('#forecast');
+var searchHistoryContainer = document.querySelector('#history');
 
 dayjs.extend(window.dayjs_plugin_utc);
 dayjs.extend(window.dayjs_plugin_timezone);
